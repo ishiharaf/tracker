@@ -61,14 +61,8 @@ const getInvoice = (log) => {
 	return path.resolve(folder, file)
 }
 
-const getCurrentLog = (date) => {
+const getLog = (date) => {
 	const file = `${getYear(date)}-${getMonth(date)}.log`
-	const folder = "hours"
-	return path.resolve(folder, file)
-}
-
-const getLog = (arg) => {
-	const file = `${path.basename(arg, path.extname(arg))}.log`
 	const folder = "hours"
 	return path.resolve(folder, file)
 }
@@ -123,7 +117,7 @@ const writeInvoice = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
 	const company = fs.readFileSync(getCompany()).toString()
-	const rate = 16
+	const rate = argv.r
 
 	const now = new Date()
 	let header = `INVOICE\n` +
@@ -172,26 +166,8 @@ const billWork = (file) => {
 	})
 }
 
-const isDate = (date) => {
-	const timestamp = Date.parse(date)
-	if(!isNaN(timestamp)) {
-		return true
-	}
-	return false
-}
-
-const isLog = (arg) => {
-	if (arg.includes(".log")) {
-		return true
-	}
-	if (isDate(arg)) {
-		return true
-	}
-	return false
-}
-
 const parser = require("./parser")
-const defaults = {w: false, i: getCurrentLog(new Date()), o: "txt", r: 16}
+const defaults = {w: false, i: getLog(new Date()), o: "txt", r: 16}
 const args = process.argv.slice(2)
 const argv = parser(args, opts={default: defaults})
 
