@@ -39,7 +39,7 @@ const getTotalTime = (day) => {
 	return ((day.workEnd - day.workStart) / 1000) / 60
 }
 
-const getBillTotal = (billable, rate) => {
+const getTotalAmount = (billable, rate) => {
 	return ((Math.floor(billable) / 60) * rate).toFixed(2)
 }
 
@@ -67,6 +67,36 @@ const getLog = (date) => {
 	return path.resolve(folder, file)
 }
 
+const splitLines = (data) => {
+	return data.split(/\r\n|\n\r|\n|\r/)
+}
+
+const filterLine = (line) => {
+	const filter = ["~", "-"]
+	const arr = line.split(" ")
+	return arr.filter(el => !filter.includes(el))
+}
+
+const filterArray = (arr) => {
+	const filter = [null, ""]
+	return arr.filter(el => !filter.includes(el))
+}
+
+const formatTxtLog = (log) => {
+	const lines = filterArray(splitLines(log))
+	let result = ""
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].split(" ")
+		const date = line[0]
+		const hours = line[1]
+		const rate = line[2]
+		const amount = line[3]
+
+		result += `${date} > ${hours} x $${rate} = $${amount}\n`
+	}
+	return result
+}
+
 const outputTxt = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
@@ -80,16 +110,12 @@ const outputTxt = (file, info) => {
 				`${contractor}\n\n` +
 				`BILLED TO\n` +
 				`${company}\n\n` +
-				`${info.log}\n` +
+				`${formatTxtLog(info.log)}\n` +
 				`  BILLABLE = ${getHours(info.billable)}\n` +
 				`UNBILLABLE = ${getHours(info.unbillable)}\n` +
 				`      RATE = $${rate}\n` +
-				`     TOTAL = $${getBillTotal(info.billable, rate)}`
+				`     TOTAL = $${getTotalAmount(info.billable, rate)}`
 	writeFile(invoice, header)
-}
-
-const splitLines = (data) => {
-	return data.split(/\r\n|\n\r|\n|\r/)
 }
 
 const isSameDay = (start, end) => {
@@ -97,12 +123,6 @@ const isSameDay = (start, end) => {
 		return true
 	}
 	return false
-}
-
-const filterLine = (line) => {
-	const filter = ["~", "-"]
-	const arr = line.split(" ")
-	return arr.filter(el => !filter.includes(el))
 }
 
 const getWorkDay = (line) => {
@@ -142,7 +162,7 @@ const parseLog = (file) => {
 	fs.readFile(file, "utf-8", (err, data) => {
 		if (err) return console.error(`Couldn't read ${file}`)
 
-		let totalBillable = 0, totalUnbillable = 0, days = 0, log = ""
+		let totalBillable = 0, totalUnbillable = 0, log = "", rate = argv.r
 		const lines = splitLines(data)
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i]
@@ -152,15 +172,14 @@ const parseLog = (file) => {
 				const unbillable = getTotalTime(day)
 				const workHours = getHours(billable)
 				const date = line.slice(0, 10)
-				const hours = line.slice(11)
+				const amount = getTotalAmount(billable, rate)
 
 				totalBillable += billable, totalUnbillable += unbillable
-				days += 1, log += `${date} = ${workHours} -> ${hours}\n`
+				log += `${date} ${workHours} ${rate} ${amount}\n`
 			}
 		}
 		const info = {
-			billable: totalBillable, unbillable: totalUnbillable,
-			days: days, log: log
+			billable: totalBillable, unbillable: totalUnbillable, log: log
 		}
 
 		if (argv.o === "txt") outputTxt(file, info)
