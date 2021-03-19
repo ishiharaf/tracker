@@ -23,21 +23,21 @@ You can add the date and the hours manually, or add a snippet to your text edito
 
 ```json
 {
-	"Insert current date": {
-		"prefix": "addDate",
-		"body": [
-			"$CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE"
-		],
-		"description": "Insert current date in YY/MM/DD format"
-	},
+    "Insert current date": {
+        "prefix": "addDate",
+        "body": [
+            "$CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE"
+        ],
+        "description": "Insert current date in YY/MM/DD format"
+    },
 
-	"Insert current time": {
-		"prefix": "addTime",
-		"body": [
-			"$CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND"
-		],
-		"description": "Insert current time in hh:mm:ss format"
-	},
+    "Insert current time": {
+        "prefix": "addTime",
+        "body": [
+            "$CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND"
+        ],
+        "description": "Insert current time in hh:mm:ss format"
+    },
 }
 ```
 
