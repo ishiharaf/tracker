@@ -1,4 +1,5 @@
 const fs = require("fs")
+const path = require("path")
 
 const getYear = (date) => {
 	return date.getFullYear().toString()
@@ -92,10 +93,40 @@ const getBillTotal = (billable, rate) => {
 	return ((Math.floor(billable) / 60) * rate).toFixed(2)
 }
 
+const getCompany = () => {
+	const file = "company.info"
+	const folder = "info"
+	return path.resolve(folder, file)
+}
+
+const getContractor = () => {
+	const file = "contractor.info"
+	const folder = "info"
+	return path.resolve(folder, file)
+}
+
+const getInvoice = (log) => {
+	const file = `${path.basename(log, path.extname(log))}.txt`
+	const folder = "invoices"
+	return path.resolve(folder, file)
+}
+
+const getCurrentLog = (date) => {
+	const file = `${getYear(date)}-${getMonth(date)}.log`
+	const folder = "hours"
+	return path.resolve(folder, file)
+}
+
+const getLog = (arg) => {
+	const file = `${path.basename(arg, path.extname(arg))}.log`
+	const folder = "hours"
+	return path.resolve(folder, file)
+}
+
 const writeInvoice = (file, info) => {
-	const log = `${file.slice(0, 7)}.invoice`
-	const contractor = fs.readFileSync("contractor.info").toString()
-	const company = fs.readFileSync("company.info").toString()
+	const invoice = getInvoice(file)
+	const contractor = fs.readFileSync(getContractor()).toString()
+	const company = fs.readFileSync(getCompany()).toString()
 	const rate = 16
 
 	const now = new Date()
@@ -110,7 +141,7 @@ const writeInvoice = (file, info) => {
 				`UNBILLABLE = ${getHours(info.unbillable)}\n` +
 				`      RATE = $${rate}\n` +
 				`     TOTAL = $${getBillTotal(info.billable, rate)}`
-	writeFile(log, header)
+	writeFile(invoice, header)
 }
 
 const billWork = (file) => {
@@ -159,18 +190,14 @@ const isLog = (arg) => {
 	return false
 }
 
-const getFile = (date) => {
-	return `${getYear(date)}-${getMonth(date)}.log`
-}
-
 const args = process.argv.slice(2)
 const billArg = args.indexOf("-b") > -1 ? args.indexOf("-b") : undefined
 const logArg = args.length > 0 ? args.length - 1 : undefined
 
 if (billArg >= 0) {
 	if (logArg && isLog(args[logArg])) {
-		billWork(args[logArg])
+		billWork(getLog(args[logArg]))
 	} else {
-		billWork(getFile(new Date()))
+		billWork(getCurrentLog(new Date()))
 	}
 }
