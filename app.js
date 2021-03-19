@@ -1,6 +1,12 @@
 const fs = require("fs")
 const path = require("path")
 
+const writeFile = (file, data) => {
+	fs.writeFile(file, data, err => {
+		if (err) return console.error(err)
+	})
+}
+
 const getYear = (date) => {
 	return date.getFullYear().toString()
 }
@@ -10,56 +16,6 @@ const getMonth = (date) => {
 
 const getDate = (date) => {
 	return date.getDate().toString().padStart(2, "0")
-}
-
-const splitLines = (data) => {
-	return data.split(/\r\n|\n\r|\n|\r/)
-}
-
-const filterLine = (line) => {
-	const filter = ["~", "-"]
-	const arr = line.split(" ")
-	return arr.filter(el => !filter.includes(el))
-}
-
-const isSameDay = (start, end) => {
-	if (end > start) {
-		return true
-	}
-	return false
-}
-
-const getWorkDay = (line) => {
-	const day = {
-		workStart: undefined, workEnd: undefined,
-		breakStart: undefined, breakEnd: undefined
-	}
-	const log = filterLine(line)
-	const start = new Date(`${log[0]} ${log[1]}`)
-	const end = new Date(`${log[0]} ${log[log.length - 1]}`)
-
-	if (log.length === 3) {
-		if (!isSameDay(start, end)) {
-			end.setDate(end.getDate() + 1)
-		}
-	}
-	if (log.length === 5) {
-		const breakStart = new Date(`${log[0]} ${log[2]}`)
-		const breakEnd = new Date(`${log[0]} ${log[3]}`)
-
-		if (!isSameDay(start, breakStart)) {
-			breakStart.setDate(breakStart.getDate() + 1)
-		}
-		if (!isSameDay(breakStart, breakEnd)) {
-			breakEnd.setDate(breakEnd.getDate() + 1)
-		}
-		if (!isSameDay(breakEnd, end)) {
-			end.setDate(end.getDate() + 1)
-		}
-		day.breakStart = breakStart, day.breakEnd = breakEnd
-	}
-	day.workStart = start, day.workEnd = end
-	return day
 }
 
 const getHours = (time) => {
@@ -81,12 +37,6 @@ const getBillableTime = (day) => {
 
 const getTotalTime = (day) => {
 	return ((day.workEnd - day.workStart) / 1000) / 60
-}
-
-const writeFile = (file, data) => {
-	fs.writeFile(file, data, err => {
-		if (err) return console.error(err)
-	})
 }
 
 const getBillTotal = (billable, rate) => {
@@ -123,6 +73,52 @@ const getLog = (arg) => {
 	return path.resolve(folder, file)
 }
 
+const isSameDay = (start, end) => {
+	if (end > start) {
+		return true
+	}
+	return false
+}
+
+const filterLine = (line) => {
+	const filter = ["~", "-"]
+	const arr = line.split(" ")
+	return arr.filter(el => !filter.includes(el))
+}
+
+const getWorkDay = (line) => {
+	const day = {
+		workStart: undefined, workEnd: undefined,
+		breakStart: undefined, breakEnd: undefined
+	}
+	const log = filterLine(line)
+	const start = new Date(`${log[0]} ${log[1]}`)
+	const end = new Date(`${log[0]} ${log[log.length - 1]}`)
+
+	if (log.length === 3) {
+		if (!isSameDay(start, end)) {
+			end.setDate(end.getDate() + 1)
+		}
+	}
+	if (log.length === 5) {
+		const breakStart = new Date(`${log[0]} ${log[2]}`)
+		const breakEnd = new Date(`${log[0]} ${log[3]}`)
+
+		if (!isSameDay(start, breakStart)) {
+			breakStart.setDate(breakStart.getDate() + 1)
+		}
+		if (!isSameDay(breakStart, breakEnd)) {
+			breakEnd.setDate(breakEnd.getDate() + 1)
+		}
+		if (!isSameDay(breakEnd, end)) {
+			end.setDate(end.getDate() + 1)
+		}
+		day.breakStart = breakStart, day.breakEnd = breakEnd
+	}
+	day.workStart = start, day.workEnd = end
+	return day
+}
+
 const writeInvoice = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
@@ -142,6 +138,10 @@ const writeInvoice = (file, info) => {
 				`      RATE = $${rate}\n` +
 				`     TOTAL = $${getBillTotal(info.billable, rate)}`
 	writeFile(invoice, header)
+}
+
+const splitLines = (data) => {
+	return data.split(/\r\n|\n\r|\n|\r/)
 }
 
 const billWork = (file) => {
