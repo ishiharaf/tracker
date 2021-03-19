@@ -190,14 +190,11 @@ const isLog = (arg) => {
 	return false
 }
 
+const parser = require("./parser")
+const defaults = {w: false, i: getCurrentLog(new Date()), o: "txt", r: 16}
 const args = process.argv.slice(2)
-const billArg = args.indexOf("-b") > -1 ? args.indexOf("-b") : undefined
-const logArg = args.length > 0 ? args.length - 1 : undefined
+const argv = parser(args, opts={default: defaults})
 
-if (billArg >= 0) {
-	if (logArg && isLog(args[logArg])) {
-		billWork(getLog(args[logArg]))
-	} else {
-		billWork(getCurrentLog(new Date()))
-	}
+if (argv.w) {
+	billWork(argv.i)
 }
