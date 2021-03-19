@@ -19,7 +19,7 @@ Create a file inside the `hours` folder with the `MM-DD.log` naming scheme. Fill
 2021/03/19 09:29:03 ~ 17:10:10
 ```
 
-You can add the date and the hours manually, or add a snippet to your text editor. I just type `addDate` to add the current date, and `addTime` to add the current time. This is my VSCode global snippets file:
+You can add the date and the hours manually, or add a snippet to your text editor. I type `addDate` to add the current date, and `addTime` to add the current time. This is my VSCode global snippets file:
 
 ```json
 {
@@ -43,7 +43,7 @@ You can add the date and the hours manually, or add a snippet to your text edito
 
 Change the contents of `contractor.info` to reflect your information, and `company.info` to reflect the company information. After you're done with that, run the app with `node -w` and an invoice will appear inside the `invoices` folder.
 
-You can pass additional arguments to change some details. To change the invoice content, you'd have to change the contents of the `outputTxt()` function.
+You can pass additional arguments to change some details. To change the invoice, you have to change the `outputTxt()` function.
 
 ## Options
 
@@ -54,7 +54,7 @@ You can pass additional arguments to change some details. To change the invoice 
 - `-r` changes the hourly rate. The default is `10`.
 
 ## Setup
-To run this project, simply clone the repository and run it with node. To output the sample log as an invoice, pass `-i 2021-03` or `-i 2021-03.log` as an argument or change the name to reflect the current month and day.
+To run this project, clone the repository and run it with node. To output the sample log as an invoice, pass `-i 2021-03` or `-i 2021-03.log` as an argument or change the name to reflect the current month and day.
 
 ```bash
 $ node app -w
