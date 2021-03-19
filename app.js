@@ -44,7 +44,7 @@ const getBillTotal = (billable, rate) => {
 }
 
 const getCompany = () => {
-	const file = "company.info"
+	const file = `${argv.c}.info`
 	const folder = "info"
 	return path.resolve(folder, file)
 }
@@ -168,7 +168,13 @@ const parseLog = (file) => {
 }
 
 const parser = require("./parser")
-const defaults = {w: false, i: getLog(new Date()), o: "txt", r: 16}
+const defaults = {
+	w: false,
+	i: getLog(new Date()),
+	o: "txt",
+	c: "company",
+	r: 16
+}
 const args = process.argv.slice(2)
 const argv = parser(args, opts={default: defaults})
 
