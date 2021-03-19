@@ -56,7 +56,7 @@ const getContractor = () => {
 }
 
 const getInvoice = (log) => {
-	const file = `${path.basename(log, path.extname(log))}.txt`
+	const file = `${path.basename(log, path.extname(log))}.${argv.o}`
 	const folder = "invoices"
 	return path.resolve(folder, file)
 }
