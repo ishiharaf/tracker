@@ -118,6 +118,15 @@ const outputTxt = (file, info) => {
 	writeFile(invoice, header)
 }
 
+const outputHtml = (file, info) => {
+	const invoice = getInvoice(file)
+	const contractor = fs.readFileSync(getContractor()).toString()
+	const company = fs.readFileSync(getCompany()).toString()
+	const rate = argv.r
+
+	const now = new Date()
+}
+
 const isSameDay = (start, end) => {
 	if (end > start) {
 		return true
