@@ -67,6 +67,31 @@ const getLog = (date) => {
 	return path.resolve(folder, file)
 }
 
+const outputTxt = (file, info) => {
+	const invoice = getInvoice(file)
+	const contractor = fs.readFileSync(getContractor()).toString()
+	const company = fs.readFileSync(getCompany()).toString()
+	const rate = argv.r
+
+	const now = new Date()
+	let header = `INVOICE\n` +
+				`Date: ${getYear(now)}/${getMonth(now)}/${getDate(now)}\n` +
+				`Invoice number: ${getYear(now)}${getMonth(now)}${getDate(now)}\n\n` +
+				`${contractor}\n\n` +
+				`BILLED TO\n` +
+				`${company}\n\n` +
+				`${info.log}\n` +
+				`  BILLABLE = ${getHours(info.billable)}\n` +
+				`UNBILLABLE = ${getHours(info.unbillable)}\n` +
+				`      RATE = $${rate}\n` +
+				`     TOTAL = $${getBillTotal(info.billable, rate)}`
+	writeFile(invoice, header)
+}
+
+const splitLines = (data) => {
+	return data.split(/\r\n|\n\r|\n|\r/)
+}
+
 const isSameDay = (start, end) => {
 	if (end > start) {
 		return true
@@ -113,32 +138,7 @@ const getWorkDay = (line) => {
 	return day
 }
 
-const writeInvoice = (file, info) => {
-	const invoice = getInvoice(file)
-	const contractor = fs.readFileSync(getContractor()).toString()
-	const company = fs.readFileSync(getCompany()).toString()
-	const rate = argv.r
-
-	const now = new Date()
-	let header = `INVOICE\n` +
-				`Date: ${getYear(now)}/${getMonth(now)}/${getDate(now)}\n` +
-				`Invoice number: ${getYear(now)}${getMonth(now)}${getDate(now)}\n\n` +
-				`${contractor}\n\n` +
-				`BILLED TO\n` +
-				`${company}\n\n` +
-				`${info.log}\n` +
-				`  BILLABLE = ${getHours(info.billable)}\n` +
-				`UNBILLABLE = ${getHours(info.unbillable)}\n` +
-				`      RATE = $${rate}\n` +
-				`     TOTAL = $${getBillTotal(info.billable, rate)}`
-	writeFile(invoice, header)
-}
-
-const splitLines = (data) => {
-	return data.split(/\r\n|\n\r|\n|\r/)
-}
-
-const billWork = (file) => {
+const parseLog = (file) => {
 	fs.readFile(file, "utf-8", (err, data) => {
 		if (err) return console.error(`Couldn't read ${file}`)
 
@@ -162,7 +162,8 @@ const billWork = (file) => {
 			billable: totalBillable, unbillable: totalUnbillable,
 			days: days, log: log
 		}
-		writeInvoice(file, info)
+
+		if (argv.o === "txt") outputTxt(file, info)
 	})
 }
 
@@ -172,5 +173,5 @@ const args = process.argv.slice(2)
 const argv = parser(args, opts={default: defaults})
 
 if (argv.w) {
-	billWork(argv.i)
+	parseLog(argv.i)
 }
