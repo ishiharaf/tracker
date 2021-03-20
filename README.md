@@ -1,6 +1,6 @@
 # tracker
 
-Minimalistic hour tracker. It calculates the number of hours worked in a day and outputs an invoice. It acts like a time card stamped by a time clock. You can clock in and out for work and break, for a total of two times each. I used [minimist](https://github.com/substack/minimist) (1.2.5) as the argument parser.
+Minimalistic time tracker. It calculates the number of hours worked in a day and outputs an invoice. It acts like a time card stamped by a time clock. You can clock in and out for work and a break. I used [minimist](https://github.com/substack/minimist) (1.2.5) as the argument parser.
 
 ## Table of contents
 - [Usage](#usage)
@@ -49,7 +49,7 @@ You can pass additional arguments to change some details. To change the invoice,
 
 - `-w` writes an invoice.
 - `-i` takes a file as the input. The default is `MM-DD.log`.
-- `-o` changes the output type. The default is `txt`. It currently supports only `txt`.
+- `-o` changes the output format. The default is `txt`. It currently supports `txt` and `html`. `all` outputs an invoice in every format.
 - `-c` changes the billed client. Pass the name without the `.info`. The default is `company`.
 - `-r` changes the hourly rate. The default is `10`.
 
