@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.3 (2021/03/20)
+### Updated
+- Updated [README.md](README.md)
+### Added
+- Added HTML as output format
+
 ## 0.0.2 (2021/03/19)
 ### Changed
 - Created git repository
