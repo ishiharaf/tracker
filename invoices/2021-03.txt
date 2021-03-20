@@ -1,12 +1,12 @@
 INVOICE
-Date: 2021/03/19
-Invoice number: 20210319
+Date: 2021/03/20
+Invoice number: 20210320
 
 Scott McClaskey
 362  Waldeck Street
 Kansas, KS 66013
-Email: scott@email.com
-Phone number: 817-397-2837
+scott@email.com
+817-397-2837
 
 BILLED TO
 Eden Law Service LTD
