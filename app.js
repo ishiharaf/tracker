@@ -55,6 +55,12 @@ const getContractor = () => {
 	return path.resolve(folder, file)
 }
 
+const getHtml = () => {
+	const file = "invoice.html"
+	const folder = "templates"
+	return path.resolve(folder, file)
+}
+
 const getInvoice = (log) => {
 	const file = `${path.basename(log, path.extname(log))}.${argv.o}`
 	const folder = "invoices"
@@ -128,13 +134,77 @@ const outputMd = (file, info) => {
 	writeFile(invoice, txt)
 }
 
+const formatHtmlLog = (log) => {
+	const lines = filterArray(splitLines(log))
+	let result = ""
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].split(" ")
+		const date = line[0]
+		const hours = line[1]
+		const rate = line[2]
+		const amount = line[3]
+		const div = `\t\t<div class="day">\n` +
+						`\t\t\t<div class="item">${date}</div>\n` +
+						`\t\t\t<div class="item">${hours}</div>\n` +
+						`\t\t\t<div class="item">$${rate}</div>\n` +
+						`\t\t\t<div class="amount end">$${amount}</div>\n` +
+					`\t\t</div>\n`
+
+		result += div
+	}
+	return result
+}
+
 const outputHtml = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
 	const company = fs.readFileSync(getCompany()).toString()
+	const template = fs.readFileSync(getHtml()).toString()
+	const position = template.search("<body>") + 6
 	const rate = argv.r
 
 	const now = new Date()
+	const content = `\n\t<div id="title">INVOICE</div>\n` +
+					`\t<div id="info" class="header">\n` +
+						`\t\t<div class="separator"></div>\n` +
+						`\t\t<div class="item">\n` +
+							`\t\t\t<p><b>FROM</b></p>\n` +
+							`\t\t\t<div>${contractor}</div>\n` +
+						`\t\t</div>\n` +
+						`\t\t<div class="item">\n` +
+							`\t\t\t<p><b>BILL TO</b></p>\n` +
+							`\t\t\t<div>${company}</div></div>\n` +
+						`\t\t<div id="details">\n` +
+							`\t\t\t<div id="number">\n` +
+								`\t\t\t\t<div><b>Invoice Number:</b></div>\n` +
+								`\t\t\t\t<div class="end">${getYear(now)}${getMonth(now)}${getDate(now)}</div>\n` +
+							`\t\t\t</div>\n` +
+							`\t\t\t<div id="date">\n` +
+								`\t\t\t\t<div><b>Invoice Date:</b></div>\n` +
+								`\t\t\t\t<div class="end">${getYear(now)}/${getMonth(now)}/${getDate(now)}</div>\n` +
+							`\t\t\t</div>\n` +
+						`\t\t</div>\n` +
+					`\t</div>\n` +
+					`\t<div id="expenses" class="header">\n` +
+						`\t\t<div class="separator"></div>\n` +
+						`\t\t<div class="item"><p><b>DATE</b></p></div>\n` +
+						`\t\t<div class="item"><p><b>HOURS</b></p></div>\n` +
+						`\t\t<div class="item"><p><b>RATE</b></p></div>\n` +
+						`\t\t<div class="amount end"><p><b>AMOUNT</b></p></div>\n` +
+					`\t</div>\n` +
+					`\t<div id="log">\n${formatHtmlLog(info.log)}` +
+					`\t</div>\n` +
+					`\t<div class="total">\n` +
+						`\t\t<div><b>Total Hours:</b></div>\n` +
+						`\t\t<div class="end">${getHours(info.billable)}</div>\n` +
+					`\t</div>\n` +
+					`\t<div class="total">\n` +
+						`\t\t<div><b>Total Amount:</b></div>\n` +
+						`\t\t<div class="end">$${getTotalAmount(info.billable, rate)}</div>\n` +
+					`\t</div>\n`
+
+	const html = template.slice(0, position) + content + template.slice(position)
+	writeFile(invoice, html)
 }
 
 const isSameDay = (start, end) => {
@@ -202,6 +272,7 @@ const parseLog = (file) => {
 		}
 
 		if (argv.o === "txt") outputTxt(file, info)
+		if (argv.o === "html") outputHtml(file, info)
 	})
 }
 
