@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewdivort" content="width=device-width, initial-scale=1.0">
+	<title>Invoice</title>
+	<style type="text/css">
+		html {height: 100%; font-size: 62.5%;}
+		body {font-family: Helvetica; font-size: 1.6rem; display: flex; flex-flow: column nowrap; max-width: 84.2rem; margin: 3rem auto;}
+		#title {font-size: 3.5rem; margin-bottom: 6rem;}
+		.header {position: relative}
+		.header > div > p {margin: 0 0 2rem 0;}
+		.header > div > div {white-space: pre-wrap;}
+		.header, .day, .total, #number, #date {display: flex; flex-flow: row nowrap;}
+		#log {margin-bottom: 3rem;}
+		#info {margin-bottom: 6rem;}
+		.end {text-align: end;}
+		.total {justify-content: flex-end;}
+		.item {flex-basis: 30%;}
+		.amount {flex-basis: 10%;}
+		.total > div {flex-basis: 20%;}
+		#number > div, #date > div {flex-basis: 50%;}
+		#details {flex-basis: 40%; margin-top: 3.5rem;}
+		.separator {width: 84.2rem; border-bottom: 0.1rem solid hsl(0, 0%, 75%);; position: absolute; top: 2.8rem;}
+	</style>
+</head>
+<body>
+	<div id="title">INVOICE</div>
+	<div id="info" class="header">
+		<div class="separator"></div>
+		<div class="item">
+			<p><b>FROM</b></p>
+			<div>Scott McClaskey
+362  Waldeck Street
+Kansas, KS 66013
+scott@email.com
+817-397-2837</div>
+		</div>
+		<div class="item">
+			<p><b>BILL TO</b></p>
+			<div>Eden Law Service LTD
+858 Hillhaven Drive
+Los Angeles, CA 90046</div></div>
+		<div id="details">
+			<div id="number">
+				<div><b>Invoice Number:</b></div>
+				<div class="end">20210320</div>
+			</div>
+			<div id="date">
+				<div><b>Invoice Date:</b></div>
+				<div class="end">2021/03/20</div>
+			</div>
+		</div>
+	</div>
+	<div id="expenses" class="header">
+		<div class="separator"></div>
+		<div class="item"><p><b>DATE</b></p></div>
+		<div class="item"><p><b>HOURS</b></p></div>
+		<div class="item"><p><b>RATE</b></p></div>
+		<div class="amount end"><p><b>AMOUNT</b></p></div>
+	</div>
+	<div id="log">
+		<div class="day">
+			<div class="item">2021/03/18</div>
+			<div class="item">07:01</div>
+			<div class="item">$16</div>
+			<div class="amount end">$112.27</div>
+		</div>
+		<div class="day">
+			<div class="item">2021/03/18</div>
+			<div class="item">07:02</div>
+			<div class="item">$16</div>
+			<div class="amount end">$112.53</div>
+		</div>
+		<div class="day">
+			<div class="item">2021/03/19</div>
+			<div class="item">07:41</div>
+			<div class="item">$16</div>
+			<div class="amount end">$122.93</div>
+		</div>
+		<div class="day">
+			<div class="item">2021/03/19</div>
+			<div class="item">06:58</div>
+			<div class="item">$16</div>
+			<div class="amount end">$111.47</div>
+		</div>
+	</div>
+	<div class="total">
+		<div><b>Total Hours:</b></div>
+		<div class="end">28:43</div>
+	</div>
+	<div class="total">
+		<div><b>Total Amount:</b></div>
+		<div class="end">$459.47</div>
+	</div>
+</body>
+</html>
