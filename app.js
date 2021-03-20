@@ -273,6 +273,10 @@ const parseLog = (file) => {
 
 		if (argv.o === "txt") outputTxt(file, info)
 		if (argv.o === "html") outputHtml(file, info)
+		if (argv.o === "all") {
+			outputTxt(file, info)
+			outputHtml(file, info)
+		}
 	})
 }
 
