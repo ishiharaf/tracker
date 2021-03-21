@@ -164,42 +164,34 @@ const outputHtml = (file, info) => {
 	const rate = argv.r
 
 	const now = new Date()
-	const content = `\n\t<div id="title">INVOICE</div>\n` +
+	const content = `\n\t<div id="title">Invoice #${getYear(now)}${getMonth(now)}${getDate(now)}</div>\n` +
+					`\t<div id="subtitle">${getYear(now)}/${getMonth(now)}/${getDate(now)}</div>\n` +
+					`\t<div class="divisor"></div>\n` +
 					`\t<div id="info" class="header">\n` +
-						`\t\t<div class="separator"></div>\n` +
 						`\t\t<div class="item">\n` +
-							`\t\t\t<p><b>FROM</b></p>\n` +
+							`\t\t\t<p>Sender</p>\n` +
 							`\t\t\t<div>${contractor}</div>\n` +
 						`\t\t</div>\n` +
 						`\t\t<div class="item">\n` +
-							`\t\t\t<p><b>BILL TO</b></p>\n` +
-							`\t\t\t<div>${company}</div></div>\n` +
-						`\t\t<div id="details">\n` +
-							`\t\t\t<div id="number">\n` +
-								`\t\t\t\t<div><b>Invoice Number:</b></div>\n` +
-								`\t\t\t\t<div class="end">${getYear(now)}${getMonth(now)}${getDate(now)}</div>\n` +
-							`\t\t\t</div>\n` +
-							`\t\t\t<div id="date">\n` +
-								`\t\t\t\t<div><b>Invoice Date:</b></div>\n` +
-								`\t\t\t\t<div class="end">${getYear(now)}/${getMonth(now)}/${getDate(now)}</div>\n` +
-							`\t\t\t</div>\n` +
+							`\t\t\t<p>Recipient</p>\n` +
+							`\t\t\t<div>${company}</div>\n` +
 						`\t\t</div>\n` +
 					`\t</div>\n` +
 					`\t<div id="expenses" class="header">\n` +
 						`\t\t<div class="separator"></div>\n` +
-						`\t\t<div class="item"><p><b>DATE</b></p></div>\n` +
-						`\t\t<div class="item"><p><b>HOURS</b></p></div>\n` +
-						`\t\t<div class="item"><p><b>RATE</b></p></div>\n` +
-						`\t\t<div class="amount end"><p><b>AMOUNT</b></p></div>\n` +
+						`\t\t<div class="item"><p>Date</p></div>\n` +
+						`\t\t<div class="item"><p>Hours</p></div>\n` +
+						`\t\t<div class="item"><p>Rate</p></div>\n` +
+						`\t\t<div class="amount end"><p>Amount</p></div>\n` +
 					`\t</div>\n` +
 					`\t<div id="log">\n${formatHtmlLog(info.log)}` +
 					`\t</div>\n` +
 					`\t<div class="total">\n` +
-						`\t\t<div><b>Total Hours:</b></div>\n` +
+						`\t\t<div><b>Total Hours</b></div>\n` +
 						`\t\t<div class="end">${getHours(info.billable)}</div>\n` +
 					`\t</div>\n` +
 					`\t<div class="total">\n` +
-						`\t\t<div><b>Total Amount:</b></div>\n` +
+						`\t\t<div><b>Total Amount</b></div>\n` +
 						`\t\t<div class="end">$${getTotalAmount(info.billable, rate)}</div>\n` +
 					`\t</div>\n`
 
