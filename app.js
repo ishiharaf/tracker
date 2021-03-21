@@ -110,17 +110,16 @@ const outputTxt = (file, info) => {
 	const rate = argv.r
 
 	const now = new Date()
-	let txt = `INVOICE\n` +
-				`Date: ${getYear(now)}/${getMonth(now)}/${getDate(now)}\n` +
-				`Invoice number: ${getYear(now)}${getMonth(now)}${getDate(now)}\n\n` +
+	let txt = `INVOICE #${getYear(now)}${getMonth(now)}${getDate(now)}\n` +
+				`${getYear(now)}/${getMonth(now)}/${getDate(now)}\n\n` +
+				`SENDER\n` +
 				`${contractor}\n\n` +
-				`BILLED TO\n` +
+				`RECIPIENT\n` +
 				`${company}\n\n` +
+				`DATE         HOURS   RATE   AMOUNT\n` +
 				`${formatTxtLog(info.log)}\n` +
-				`  BILLABLE = ${getHours(info.billable)}\n` +
-				`UNBILLABLE = ${getHours(info.unbillable)}\n` +
-				`      RATE = $${rate}\n` +
-				`     TOTAL = $${getTotalAmount(info.billable, rate)}`
+				`     HOURS = ${getHours(info.billable)}\n` +
+				`    AMOUNT = $${getTotalAmount(info.billable, rate)}`
 	writeFile(invoice, txt)
 }
 
