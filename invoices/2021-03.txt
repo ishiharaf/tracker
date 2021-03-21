@@ -1,18 +1,19 @@
-INVOICE
-Date: 2021/03/21
-Invoice number: 20210321
+INVOICE #20210321
+2021/03/21
 
+SENDER
 Scott McClaskey
 362  Waldeck Street
 Kansas, KS 66013
 scott@email.com
 817-397-2837
 
-BILLED TO
+RECIPIENT
 Eden Law Service LTD
 858 Hillhaven Drive
 Los Angeles, CA 90046
 
+DATE         HOURS   RATE   AMOUNT
 2021/03/01 > 08:01 x $16 = $128.27
 2021/03/02 > 08:02 x $16 = $128.53
 2021/03/03 > 08:41 x $16 = $138.93
@@ -34,7 +35,5 @@ Los Angeles, CA 90046
 2021/03/25 > 08:04 x $16 = $129.07
 2021/03/26 > 08:01 x $16 = $128.27
 
-  BILLABLE = 160:14
-UNBILLABLE = 179:17
-      RATE = $16
-     TOTAL = $2563.73
+     HOURS = 160:14
+    AMOUNT = $2563.73
