@@ -18,29 +18,37 @@ const getDate = (date) => {
 	return date.getDate().toString().padStart(2, "0")
 }
 
-const getHours = (time) => {
-	const hour = Math.floor(time / 60).toString().padStart(2, "0")
-	const minute = Math.floor(time % 60).toString().padStart(2, "0")
+const getHours = (minutes) => {
+	const hour = Math.floor(minutes / 60).toString().padStart(2, "0")
+	const minute = Math.floor(minutes % 60).toString().padStart(2, "0")
 	return `${hour}:${minute}`
 }
 
-const getBillableTime = (day) => {
-	const billable = ((day.workEnd - day.workStart) / 1000) / 60
-	let work = billable
+const getHoursDec = (minutes) => {
+	return (minutes / 60).toFixed(2)
+}
 
+const getMinutesDiff = (startDate, endDate) => {
+	const seconds = 1000, minutes = 60
+	return Math.floor(((endDate - startDate) / seconds) / minutes)
+}
+
+const getBillableTime = (day) => {
+	const billable = getMinutesDiff(day.workStart, day.workEnd)
 	if (day.breakStart) {
-		const unbillable = ((day.breakEnd - day.breakStart) / 1000) / 60
-		work = work - unbillable
+		const unbillable = getMinutesDiff(day.breakStart, day.breakEnd)
+		return billable - unbillable
 	}
-	return work
+	return billable
 }
 
 const getTotalTime = (day) => {
-	return ((day.workEnd - day.workStart) / 1000) / 60
+	return getMinutesDiff(day.workStart, day.workEnd)
 }
 
-const getTotalAmount = (billable, rate) => {
-	return ((Math.floor(billable) / 60) * rate).toFixed(2)
+const getAmount = (minutes, rate) => {
+	const hours = argv.d ? Number((minutes / 60).toFixed(2)) : minutes / 60
+	return (hours * rate).toFixed(2)
 }
 
 const getCompany = () => {
@@ -73,8 +81,8 @@ const getLog = (date) => {
 	return path.resolve(folder, file)
 }
 
-const splitLines = (data) => {
-	return data.split(/\r\n|\n\r|\n|\r/)
+const splitLines = (lines) => {
+	return lines.split(/\r\n|\n\r|\n|\r/)
 }
 
 const filterLine = (line) => {
@@ -88,15 +96,15 @@ const filterArray = (arr) => {
 	return arr.filter(el => !filter.includes(el))
 }
 
-const formatTxtLog = (log) => {
-	const lines = filterArray(splitLines(log))
+const formatTxtHours = (log) => {
 	let result = ""
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i].split(" ")
+	for (let i = 0; i < log.length; i++) {
+		const line = log[i].split(" ")
 		const date = line[0]
-		const hours = line[1]
-		const rate = line[2]
-		const amount = line[3]
+		const minutes = line[1]
+		const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
+		const rate = argv.r
+		const amount = getAmount(minutes, rate)
 
 		result += `${date} > ${hours} x $${rate} = $${amount}\n`
 	}
@@ -107,6 +115,8 @@ const outputTxt = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
 	const company = fs.readFileSync(getCompany()).toString()
+	const minutes = info.billable
+	const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
 	const rate = argv.r
 
 	const now = new Date()
@@ -117,9 +127,9 @@ const outputTxt = (file, info) => {
 				`RECIPIENT\n` +
 				`${company}\n\n` +
 				`DATE         HOURS   RATE   AMOUNT\n` +
-				`${formatTxtLog(info.log)}\n` +
-				`     HOURS = ${getHours(info.billable)}\n` +
-				`    AMOUNT = $${getTotalAmount(info.billable, rate)}`
+				`${formatTxtHours(info.log)}\n` +
+				`     HOURS = ${hours}\n` +
+				`    AMOUNT = $${getAmount(minutes, rate)}`
 	writeFile(invoice, txt)
 }
 
@@ -134,14 +144,14 @@ const outputMd = (file, info) => {
 }
 
 const formatHtmlLog = (log) => {
-	const lines = filterArray(splitLines(log))
 	let result = ""
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i].split(" ")
+	for (let i = 0; i < log.length; i++) {
+		const line = log[i].split(" ")
 		const date = line[0]
-		const hours = line[1]
-		const rate = line[2]
-		const amount = line[3]
+		const minutes = line[1]
+		const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
+		const rate = argv.r
+		const amount = getAmount(minutes, rate)
 		const div = `\t\t<div class="day">\n` +
 						`\t\t\t<div class="item">${date}</div>\n` +
 						`\t\t\t<div class="item">${hours}</div>\n` +
@@ -160,6 +170,8 @@ const outputHtml = (file, info) => {
 	const company = fs.readFileSync(getCompany()).toString()
 	const template = fs.readFileSync(getHtml()).toString()
 	const position = template.search("<body>") + 6
+	const minutes = info.billable
+	const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
 	const rate = argv.r
 
 	const now = new Date()
@@ -187,11 +199,11 @@ const outputHtml = (file, info) => {
 					`\t</div>\n` +
 					`\t<div class="total">\n` +
 						`\t\t<div><b>Total Hours</b></div>\n` +
-						`\t\t<div class="end">${getHours(info.billable)}</div>\n` +
+						`\t\t<div class="end">${hours}</div>\n` +
 					`\t</div>\n` +
 					`\t<div class="total">\n` +
 						`\t\t<div><b>Total Amount</b></div>\n` +
-						`\t\t<div class="end">$${getTotalAmount(info.billable, rate)}</div>\n` +
+						`\t\t<div class="end">$${getAmount(minutes, rate)}</div>\n` +
 					`\t</div>\n`
 
 	const html = template.slice(0, position) + content + template.slice(position)
@@ -242,7 +254,7 @@ const parseLog = (file) => {
 	fs.readFile(file, "utf-8", (err, data) => {
 		if (err) return console.error(`Couldn't read ${file}`)
 
-		let totalBillable = 0, totalUnbillable = 0, log = "", rate = argv.r
+		let totalBillable = 0, totalUnbillable = 0, log = []
 		const lines = splitLines(data)
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i]
@@ -250,12 +262,10 @@ const parseLog = (file) => {
 				const day = getWorkDay(line)
 				const billable = getBillableTime(day)
 				const unbillable = getTotalTime(day)
-				const workHours = getHours(billable)
 				const date = line.slice(0, 10)
-				const amount = getTotalAmount(billable, rate)
 
 				totalBillable += billable, totalUnbillable += unbillable
-				log += `${date} ${workHours} ${rate} ${amount}\n`
+				log.push(`${date} ${billable}`)
 			}
 		}
 		const info = {
@@ -277,6 +287,7 @@ const defaults = {
 	i: getLog(new Date()),
 	o: "txt",
 	c: "company",
+	d: false,
 	r: 16
 }
 const args = process.argv.slice(2)
