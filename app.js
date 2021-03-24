@@ -25,7 +25,7 @@ const getHours = (minutes) => {
 }
 
 const getHoursDec = (minutes) => {
-	return (minutes / 60).toFixed(2)
+	return (minutes / 60).toFixed(2).padStart(5, "0")
 }
 
 const getMinutesDiff = (startDate, endDate) => {
