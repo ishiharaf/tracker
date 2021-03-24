@@ -152,13 +152,13 @@ const formatHtmlLog = (log) => {
 		const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
 		const rate = argv.r
 		const amount = getAmount(minutes, rate)
-		const div = `\t\t<div class="day">\n` +
-						`\t\t\t<div class="item">${date}</div>\n` +
-						`\t\t\t<div class="item">${hours}</div>\n` +
-						`\t\t\t<div class="item">$${rate}</div>\n` +
-						`\t\t\t<div class="amount end">$${amount}</div>\n` +
-					`\t\t</div>\n`
-
+		const div = `
+		<div class="day">
+			<div class="item">${date}</div>
+			<div class="item">${hours}</div>
+			<div class="item">$${rate}</div>
+			<div class="amount end">$${amount}</div>
+		</div>`
 		result += div
 	}
 	return result
@@ -175,36 +175,37 @@ const outputHtml = (file, info) => {
 	const rate = argv.r
 
 	const now = new Date()
-	const content = `\n\t<div id="title">Invoice #${getYear(now)}${getMonth(now)}${getDate(now)}</div>\n` +
-					`\t<div id="subtitle">${getYear(now)}/${getMonth(now)}/${getDate(now)}</div>\n` +
-					`\t<div class="divisor"></div>\n` +
-					`\t<div id="info" class="header">\n` +
-						`\t\t<div class="item">\n` +
-							`\t\t\t<p>Sender</p>\n` +
-							`\t\t\t<div>${contractor}</div>\n` +
-						`\t\t</div>\n` +
-						`\t\t<div class="item">\n` +
-							`\t\t\t<p>Recipient</p>\n` +
-							`\t\t\t<div>${company}</div>\n` +
-						`\t\t</div>\n` +
-					`\t</div>\n` +
-					`\t<div id="expenses" class="header">\n` +
-						`\t\t<div class="separator"></div>\n` +
-						`\t\t<div class="item"><p>Date</p></div>\n` +
-						`\t\t<div class="item"><p>Hours</p></div>\n` +
-						`\t\t<div class="item"><p>Rate</p></div>\n` +
-						`\t\t<div class="amount end"><p>Amount</p></div>\n` +
-					`\t</div>\n` +
-					`\t<div id="log">\n${formatHtmlLog(info.log)}` +
-					`\t</div>\n` +
-					`\t<div class="total">\n` +
-						`\t\t<div><b>Total Hours</b></div>\n` +
-						`\t\t<div class="end">${hours}</div>\n` +
-					`\t</div>\n` +
-					`\t<div class="total">\n` +
-						`\t\t<div><b>Total Amount</b></div>\n` +
-						`\t\t<div class="end">$${getAmount(minutes, rate)}</div>\n` +
-					`\t</div>\n`
+	const content = `
+	<div id="title">Invoice #${getYear(now)}${getMonth(now)}${getDate(now)}</div>
+	<div id="subtitle">${getYear(now)}/${getMonth(now)}/${getDate(now)}</div>
+	<div class="divisor"></div>
+	<div id="info" class="header">
+		<div class="item">
+			<p>Sender</p>
+			<div>${contractor}</div>
+		</div>
+		<div class="item">
+			<p>Recipient</p>
+			<div>${company}</div>
+		</div>
+	</div>
+	<div id="expenses" class="header">
+		<div class="separator"></div>
+		<div class="item"><p>Date</p></div>
+		<div class="item"><p>Hours</p></div>
+		<div class="item"><p>Rate</p></div>
+		<div class="amount end"><p>Amount</p></div>
+	</div>
+	<div id="log">${formatHtmlLog(info.log)}
+	</div>
+	<div class="total">
+		<div><b>Total Hours</b></div>
+		<div class="end">${hours}</div>
+	</div>
+	<div class="total">
+		<div><b>Total Amount</b></div>
+		<div class="end">$${getAmount(minutes, rate)}</div>
+	</div>`
 
 	const html = template.slice(0, position) + content + template.slice(position)
 	writeFile(invoice, html)
