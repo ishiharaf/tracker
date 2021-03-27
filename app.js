@@ -81,6 +81,12 @@ const getLog = (date) => {
 	return path.resolve(folder, file)
 }
 
+const getExpenses = () => {
+	const file = path.basename(argv.i)
+	const folder = "expenses"
+	return path.resolve(folder, file)
+}
+
 const splitLines = (lines) => {
 	return lines.split(/\r\n|\n\r|\n|\r/)
 }
@@ -91,12 +97,31 @@ const filterLine = (line) => {
 	return arr.filter(el => !filter.includes(el))
 }
 
-const filterArray = (arr) => {
-	const filter = [null, ""]
-	return arr.filter(el => !filter.includes(el))
+const txtExpenses = (amount) => {
+	const log = fs.readFileSync(getExpenses()).toString()
+	let txt = "", subtotal = 0
+
+	const lines = splitLines(log)
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+		if (line.charAt(0) !== "#") {
+			const str = line.split(" ")
+			const expense = str[str.length - 1]
+			str.pop(), str.shift()
+			const item = `${str.join(" ")} = $${expense}\n`
+
+			txt += item, subtotal += Number(expense)
+		}
+	}
+
+	const total = (Number(amount) + subtotal).toFixed(2)
+	return `\n\nADDITIONAL EXPENSES\n` +
+		   `${txt}\n` +
+		   `  SUBTOTAL = $${subtotal}\n` +
+		   `     TOTAL = $${total}`
 }
 
-const formatTxtHours = (log) => {
+const txtHours = (log) => {
 	let result = ""
 	for (let i = 0; i < log.length; i++) {
 		const line = log[i].split(" ")
@@ -118,18 +143,21 @@ const outputTxt = (file, info) => {
 	const minutes = info.billable
 	const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
 	const rate = argv.r
+	const amount = getAmount(minutes, rate)
 
 	const now = new Date()
 	let txt = `INVOICE #${getYear(now)}${getMonth(now)}${getDate(now)}\n` +
-				`${getYear(now)}/${getMonth(now)}/${getDate(now)}\n\n` +
-				`SENDER\n` +
-				`${contractor}\n\n` +
-				`RECIPIENT\n` +
-				`${company}\n\n` +
-				`DATE         HOURS   RATE   AMOUNT\n` +
-				`${formatTxtHours(info.log)}\n` +
-				`     HOURS = ${hours}\n` +
-				`    AMOUNT = $${getAmount(minutes, rate)}`
+			  `${getYear(now)}/${getMonth(now)}/${getDate(now)}\n\n` +
+			  `SENDER\n` +
+			  `${contractor}\n\n` +
+			  `RECIPIENT\n` +
+			  `${company}\n\n` +
+			  `DATE         HOURS   RATE   AMOUNT\n` +
+			  `${txtHours(info.log)}\n` +
+			  `     HOURS = ${hours}\n` +
+			  `    AMOUNT = $${amount}`
+
+	if (argv.a) txt += txtExpenses(amount)
 	writeFile(invoice, txt)
 }
 
@@ -289,6 +317,7 @@ const defaults = {
 	o: "txt",
 	c: "company",
 	d: false,
+	a: false,
 	r: 16
 }
 const args = process.argv.slice(2)
@@ -296,4 +325,5 @@ const argv = parser(args, opts={default: defaults})
 
 if (argv.w) {
 	parseLog(argv.i)
+	txtExpenses()
 }
