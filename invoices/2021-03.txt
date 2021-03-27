@@ -1,5 +1,5 @@
-INVOICE #20210324
-2021/03/24
+INVOICE #20210327
+2021/03/27
 
 SENDER
 Scott McClaskey
@@ -37,3 +37,10 @@ DATE         HOURS   RATE   AMOUNT
 
      HOURS = 160:14
     AMOUNT = $2563.73
+
+ADDITIONAL EXPENSES
+WinRar License = $29.00
+Internet Subsidy = $99.00
+
+  SUBTOTAL = $128
+     TOTAL = $2691.73
