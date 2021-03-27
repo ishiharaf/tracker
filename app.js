@@ -75,14 +75,18 @@ const getInvoice = (log) => {
 	return path.resolve(folder, file)
 }
 
-const getLog = (date) => {
-	const file = `${getYear(date)}-${getMonth(date)}.log`
+const getName = (date) => {
+	return `${getYear(date)}-${getMonth(date)}`
+}
+
+const getLog = (name) => {
+	const file = name.includes(".log") ? name : `${name}.log`
 	const folder = "hours"
 	return path.resolve(folder, file)
 }
 
 const getExpenses = () => {
-	const file = path.basename(argv.i)
+	const file = argv.i.includes(".log") ? argv.i : `${argv.i}.log`
 	const folder = "expenses"
 	return path.resolve(folder, file)
 }
@@ -136,7 +140,7 @@ const txtHours = (log) => {
 	return result
 }
 
-const outputTxt = (file, info) => {
+const writeTxt = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
 	const company = fs.readFileSync(getCompany()).toString()
@@ -161,17 +165,7 @@ const outputTxt = (file, info) => {
 	writeFile(invoice, txt)
 }
 
-const outputMd = (file, info) => {
-	const invoice = getInvoice(file)
-	const contractor = fs.readFileSync(getContractor()).toString()
-	const company = fs.readFileSync(getCompany()).toString()
-	const rate = argv.r
-
-	const now = new Date()
-	writeFile(invoice, txt)
-}
-
-const formatHtmlLog = (log) => {
+const htmlHours = (log) => {
 	let result = ""
 	for (let i = 0; i < log.length; i++) {
 		const line = log[i].split(" ")
@@ -192,7 +186,7 @@ const formatHtmlLog = (log) => {
 	return result
 }
 
-const outputHtml = (file, info) => {
+const writeHtml = (file, info) => {
 	const invoice = getInvoice(file)
 	const contractor = fs.readFileSync(getContractor()).toString()
 	const company = fs.readFileSync(getCompany()).toString()
@@ -224,7 +218,7 @@ const outputHtml = (file, info) => {
 		<div class="item"><p>Rate</p></div>
 		<div class="amount end"><p>Amount</p></div>
 	</div>
-	<div id="log">${formatHtmlLog(info.log)}
+	<div id="log">${htmlHours(info.log)}
 	</div>
 	<div class="total">
 		<div><b>Total Hours</b></div>
@@ -301,11 +295,11 @@ const parseLog = (file) => {
 			billable: totalBillable, unbillable: totalUnbillable, log: log
 		}
 
-		if (argv.o === "txt") outputTxt(file, info)
-		if (argv.o === "html") outputHtml(file, info)
+		if (argv.o === "txt") writeTxt(file, info)
+		if (argv.o === "html") writeHtml(file, info)
 		if (argv.o === "all") {
-			outputTxt(file, info)
-			outputHtml(file, info)
+			argv.o = "txt", writeTxt(file, info)
+			argv.o = "html", writeHtml(file, info)
 		}
 	})
 }
@@ -313,7 +307,7 @@ const parseLog = (file) => {
 const parser = require("./parser")
 const defaults = {
 	w: false,
-	i: getLog(new Date()),
+	i: getName(new Date()),
 	o: "txt",
 	c: "company",
 	d: false,
@@ -324,6 +318,5 @@ const args = process.argv.slice(2)
 const argv = parser(args, opts={default: defaults})
 
 if (argv.w) {
-	parseLog(argv.i)
-	txtExpenses()
+	parseLog(getLog(argv.i))
 }
