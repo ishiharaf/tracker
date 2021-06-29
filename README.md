@@ -43,15 +43,17 @@ You can add the date and the hours manually, or add a snippet to your text edito
 
 Change the contents of `contractor.info` to reflect your information, and `company.info` to reflect the company information. After you're done with that, run the app with `node -w` and an invoice will appear inside the `invoices` folder.
 
-You can pass additional arguments to change some details. To change the invoice, you have to change the `outputTxt()` function.
+You can pass additional arguments to change some details. To change the invoice, you have to edit the source code.
 
 ## Options
-
+- `-h` displays a help message.
+- `-a` includes additional expenses on the invoice.
 - `-w` writes an invoice.
 - `-i` takes a file as the input. The default is `MM-DD.log`.
-- `-o` changes the output format. The default is `txt`. It currently supports `txt` and `html`. `all` outputs an invoice in every format.
+- `-o` changes the output format. The default is `txt`. It currently supports `txt` and `html`.
+- `-d` changes the hours on the invoice to decimal
 - `-c` changes the billed client. Pass the name without the `.info`. The default is `company`.
-- `-r` changes the hourly rate. The default is `10`.
+- `-r` changes the hourly rate. The default is `16`.
 
 ## Setup
 To run this project, clone the repository and run it with node. To output the sample log as an invoice, pass `-i 2021-03` or `-i 2021-03.log` as an argument or change the name to reflect the current month and day.

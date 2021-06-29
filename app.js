@@ -165,6 +165,54 @@ const writeTxt = (file, info) => {
 	writeFile(invoice, txt)
 }
 
+const htmlExpenses = (amount) => {
+	const log = fs.readFileSync(getExpenses()).toString()
+	let subtotal = 0
+	let html = `
+	<div id="additionalExpenses" class="header" style="margin-top: 3rem;">
+		<div class="separator"></div>
+		<div class="item"><p>Date</p></div>
+		<div class="item"><p>Misc. Expenses</p></div>
+		<div class="item"><p></p></div>
+		<div class="amount end"><p>Amount</p></div>
+	</div>
+	<div id="log">`
+
+	const lines = splitLines(log)
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+		if (line.charAt(0) !== "#") {
+			const str = line.split(" ")
+			const date = str[0]
+			const expense = str[str.length - 1]
+			str.pop(), str.shift()
+			const item = str.join(" ")
+			const div = `
+		<div class="day">
+			<div class="item">${date}</div>
+			<div class="item" style="flex-basis: 60%;">${item}</div>
+			<div class="amount end">$${expense}</div>
+		</div>`
+
+			html += div, subtotal += Number(expense)
+		}
+	}
+
+	const total = (Number(amount) + subtotal).toFixed(2)
+	html += `
+	</div>
+	<div class="total">
+		<div><b>Subtotal</b></div>
+		<div class="end">$${subtotal}</div>
+	</div>
+	<div class="total">
+		<div><b>Total</b></div>
+		<div class="end">$${total}</div>
+	</div>`
+
+	return html
+}
+
 const htmlHours = (log) => {
 	let result = ""
 	for (let i = 0; i < log.length; i++) {
@@ -195,6 +243,7 @@ const writeHtml = (file, info) => {
 	const minutes = info.billable
 	const hours = argv.d ? getHoursDec(minutes) : getHours(minutes)
 	const rate = argv.r
+	const amount = getAmount(minutes, rate)
 
 	const now = new Date()
 	const content = `
@@ -226,10 +275,13 @@ const writeHtml = (file, info) => {
 	</div>
 	<div class="total">
 		<div><b>Total Amount</b></div>
-		<div class="end">$${getAmount(minutes, rate)}</div>
+		<div class="end">$${amount}</div>
 	</div>`
 
-	const html = template.slice(0, position) + content + template.slice(position)
+	let html = template.slice(0, position) + content
+	if (argv.a) html += htmlExpenses(amount)
+	html += template.slice(position)
+
 	writeFile(invoice, html)
 }
 
@@ -297,11 +349,18 @@ const parseLog = (file) => {
 
 		if (argv.o === "txt") writeTxt(file, info)
 		if (argv.o === "html") writeHtml(file, info)
-		if (argv.o === "all") {
-			argv.o = "txt", writeTxt(file, info)
-			argv.o = "html", writeHtml(file, info)
-		}
 	})
+}
+
+const showHelp = () => {
+	console.log('"-h" displays this message')
+	console.log('"-w" writes an invoice.')
+	console.log('"-i" takes a file as the input. Default is "MM-DD.log"')
+	console.log('"-o" changes the output format. Default is "txt". It currently supports "txt" and "html"')
+	console.log('"-d" changes the hours on the invoice to decimal')
+	console.log('"-a" includes additional expenses on the invoice')
+	console.log('"-c" changes the billed client. Pass the name without the ".info". Default is "company"')
+	console.log('"-r" changes the hourly rate. Default is "16"')
 }
 
 const parser = require("./parser")
@@ -310,6 +369,7 @@ const defaults = {
 	i: getName(new Date()),
 	o: "txt",
 	c: "company",
+	h: false,
 	d: false,
 	a: false,
 	r: 16
@@ -319,4 +379,7 @@ const argv = parser(args, opts={default: defaults})
 
 if (argv.w) {
 	parseLog(getLog(argv.i))
+}
+if (argv.h) {
+	showHelp()
 }

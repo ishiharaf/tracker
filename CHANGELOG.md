@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.4 (2021/06/29)
+### Updated
+- Updated [README.md](README.md)
+- Updated HTML output
+
 ## 0.0.3 (2021/03/20)
 ### Updated
 - Updated [README.md](README.md)
