@@ -41,9 +41,9 @@ You can add the date and the hours manually, or add a snippet to your text edito
 }
 ```
 
-Change the contents of `contractor.info` to reflect your information, and `company.info` to reflect the company information. After you're done with that, run the app with `node -w` and an invoice will appear inside the `invoices` folder.
+Change the contents of `contractor.info` to reflect your information, and `company.info` to reflect the company information. Run the app with `node -w` and an invoice will appear inside the `invoices` folder.
 
-You can pass additional arguments to change some details. To change the invoice, you have to edit the source code.
+You can pass additional arguments to change some details. To change the invoice or make other changes permanent, you have to edit the source code.
 
 ## Options
 - `-h` displays a help message.
