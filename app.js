@@ -355,10 +355,10 @@ const parseLog = (file) => {
 const showHelp = () => {
 	console.log('"-h" displays this message')
 	console.log('"-w" writes an invoice.')
+	console.log('"-a" includes additional expenses on the invoice')
 	console.log('"-i" takes a file as the input. Default is "MM-DD.log"')
 	console.log('"-o" changes the output format. Default is "txt". It currently supports "txt" and "html"')
 	console.log('"-d" changes the hours on the invoice to decimal')
-	console.log('"-a" includes additional expenses on the invoice')
 	console.log('"-c" changes the billed client. Pass the name without the ".info". Default is "company"')
 	console.log('"-r" changes the hourly rate. Default is "16"')
 }
