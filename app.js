@@ -24,14 +24,6 @@ const isSameDay = (start, end) => {
 	return false
 }
 
-const isDate = (date) => {
-	const timestamp = Date.parse(date)
-	if(!isNaN(timestamp)) {
-		return true
-	}
-	return false
-}
-
 const getYear = (date) => {
 	return date.getFullYear().toString()
 }
@@ -58,22 +50,10 @@ const getMinutesDiff = (startDate, endDate) => {
 	return Math.floor(((endDate - startDate) / seconds) / minutes)
 }
 
-const getTotalTime = (startTime, endTime) => {
-	const start = startTime
-	const end = endTime
-
-	if (!isSameDay(start, end)) {
-		end.setDate(end.getDate() + 1)
-	}
-	return getMinutesDiff(start, end)
-}
-
+// TODO: Fix normal/decimal output's amount
 const getBillableTime = (line) => {
 	const entry = filterLine(line)
 	const date = entry[0]
-	const startTime = new Date(`${date} ${entry[1]}`)
-	const endTime = new Date(`${date} ${entry[entry.length - 1]}`)
-	const total = getTotalTime(startTime, endTime)
 	entry.shift()
 
 	let billable = 0
@@ -86,18 +66,7 @@ const getBillableTime = (line) => {
 		}
 		billable += getMinutesDiff(start, end)
 	}
-
-	let unbillable = 0
-	for (let i = 0; i < entry.length; i += 2) {
-		const start = new Date(`${date} ${entry[i + 1]}`)
-		const end = new Date(`${date} ${entry[i + 2]}`)
-
-		if (!isSameDay(start, end)) {
-			end.setDate(end.getDate() + 1)
-		}
-		unbillable += isDate(start) && isDate(end) ? getMinutesDiff(start, end): 0
-	}
-	return total - unbillable
+	return billable
 }
 
 const getAmount = (minutes, rate) => {
@@ -328,7 +297,6 @@ const writeHtml = (file, info) => {
 
 	writeFile(invoice, html)
 }
-
 
 const parseLog = (file) => {
 	fs.readFile(file, "utf-8", (err, data) => {
