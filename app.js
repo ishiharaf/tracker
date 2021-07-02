@@ -7,6 +7,31 @@ const writeFile = (file, data) => {
 	})
 }
 
+const splitLines = (lines) => {
+	return lines.split(/\r\n|\n\r|\n|\r/)
+}
+
+const filterLine = (line) => {
+	const filter = ["~", "-"]
+	const arr = line.split(" ")
+	return arr.filter(el => !filter.includes(el))
+}
+
+const isSameDay = (start, end) => {
+	if (end > start) {
+		return true
+	}
+	return false
+}
+
+const isDate = (date) => {
+	const timestamp = Date.parse(date)
+	if(!isNaN(timestamp)) {
+		return true
+	}
+	return false
+}
+
 const getYear = (date) => {
 	return date.getFullYear().toString()
 }
@@ -33,17 +58,46 @@ const getMinutesDiff = (startDate, endDate) => {
 	return Math.floor(((endDate - startDate) / seconds) / minutes)
 }
 
-const getBillableTime = (day) => {
-	const billable = getMinutesDiff(day.workStart, day.workEnd)
-	if (day.breakStart) {
-		const unbillable = getMinutesDiff(day.breakStart, day.breakEnd)
-		return billable - unbillable
+const getTotalTime = (startTime, endTime) => {
+	const start = startTime
+	const end = endTime
+
+	if (!isSameDay(start, end)) {
+		end.setDate(end.getDate() + 1)
 	}
-	return billable
+	return getMinutesDiff(start, end)
 }
 
-const getTotalTime = (day) => {
-	return getMinutesDiff(day.workStart, day.workEnd)
+const getBillableTime = (line) => {
+	const entry = filterLine(line)
+	const date = entry[0]
+	const startTime = new Date(`${date} ${entry[1]}`)
+	const endTime = new Date(`${date} ${entry[entry.length - 1]}`)
+	const total = getTotalTime(startTime, endTime)
+	entry.shift()
+
+	let billable = 0
+	for (let i = 0; i < entry.length; i += 2) {
+		const start = new Date(`${date} ${entry[i]}`)
+		const end = new Date(`${date} ${entry[i + 1]}`)
+
+		if (!isSameDay(start, end)) {
+			end.setDate(end.getDate() + 1)
+		}
+		billable += getMinutesDiff(start, end)
+	}
+
+	let unbillable = 0
+	for (let i = 0; i < entry.length; i += 2) {
+		const start = new Date(`${date} ${entry[i + 1]}`)
+		const end = new Date(`${date} ${entry[i + 2]}`)
+
+		if (!isSameDay(start, end)) {
+			end.setDate(end.getDate() + 1)
+		}
+		unbillable += isDate(start) && isDate(end) ? getMinutesDiff(start, end): 0
+	}
+	return total - unbillable
 }
 
 const getAmount = (minutes, rate) => {
@@ -89,16 +143,6 @@ const getExpenses = () => {
 	const file = argv.i.includes(".log") ? argv.i : `${argv.i}.log`
 	const folder = "expenses"
 	return path.resolve(folder, file)
-}
-
-const splitLines = (lines) => {
-	return lines.split(/\r\n|\n\r|\n|\r/)
-}
-
-const filterLine = (line) => {
-	const filter = ["~", "-"]
-	const arr = line.split(" ")
-	return arr.filter(el => !filter.includes(el))
 }
 
 const txtExpenses = (amount) => {
@@ -285,66 +329,25 @@ const writeHtml = (file, info) => {
 	writeFile(invoice, html)
 }
 
-const isSameDay = (start, end) => {
-	if (end > start) {
-		return true
-	}
-	return false
-}
-
-const getWorkDay = (line) => {
-	const day = {
-		workStart: undefined, workEnd: undefined,
-		breakStart: undefined, breakEnd: undefined
-	}
-	const log = filterLine(line)
-	const start = new Date(`${log[0]} ${log[1]}`)
-	const end = new Date(`${log[0]} ${log[log.length - 1]}`)
-
-	if (log.length === 3) {
-		if (!isSameDay(start, end)) {
-			end.setDate(end.getDate() + 1)
-		}
-	}
-	if (log.length === 5) {
-		const breakStart = new Date(`${log[0]} ${log[2]}`)
-		const breakEnd = new Date(`${log[0]} ${log[3]}`)
-
-		if (!isSameDay(start, breakStart)) {
-			breakStart.setDate(breakStart.getDate() + 1)
-		}
-		if (!isSameDay(breakStart, breakEnd)) {
-			breakEnd.setDate(breakEnd.getDate() + 1)
-		}
-		if (!isSameDay(breakEnd, end)) {
-			end.setDate(end.getDate() + 1)
-		}
-		day.breakStart = breakStart, day.breakEnd = breakEnd
-	}
-	day.workStart = start, day.workEnd = end
-	return day
-}
 
 const parseLog = (file) => {
 	fs.readFile(file, "utf-8", (err, data) => {
 		if (err) return console.error(`Couldn't read ${file}`)
 
-		let totalBillable = 0, totalUnbillable = 0, log = []
+		let totalBillable = 0, log = []
 		const lines = splitLines(data)
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i]
 			if (line.charAt(0) !== "#") {
-				const day = getWorkDay(line)
-				const billable = getBillableTime(day)
-				const unbillable = getTotalTime(day)
+				const billable = getBillableTime(line)
 				const date = line.slice(0, 10)
 
-				totalBillable += billable, totalUnbillable += unbillable
+				totalBillable += billable
 				log.push(`${date} ${billable}`)
 			}
 		}
 		const info = {
-			billable: totalBillable, unbillable: totalUnbillable, log: log
+			billable: totalBillable, log: log
 		}
 
 		if (argv.o === "txt") writeTxt(file, info)
