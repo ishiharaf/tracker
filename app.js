@@ -47,10 +47,9 @@ const getHoursDec = (minutes) => {
 
 const getMinutesDiff = (startDate, endDate) => {
 	const seconds = 1000, minutes = 60
-	return Math.floor(((endDate - startDate) / seconds) / minutes)
+	return ((endDate - startDate) / seconds) / minutes
 }
 
-// TODO: Fix normal/decimal output's amount
 const getBillableTime = (line) => {
 	const entry = filterLine(line)
 	const date = entry[0]
@@ -70,7 +69,7 @@ const getBillableTime = (line) => {
 }
 
 const getAmount = (minutes, rate) => {
-	const hours = argv.d ? Number((minutes / 60).toFixed(2)) : minutes / 60
+	const hours = Number((minutes / 60).toFixed(2))
 	return (hours * rate).toFixed(2)
 }
 
