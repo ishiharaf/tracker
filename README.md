@@ -1,6 +1,6 @@
 # tracker
 
-Minimalistic time tracker. It calculates the number of hours worked in a day and outputs an invoice. It acts like a time card stamped by a time clock. You can clock in and out for work and a break. I used [minimist](https://github.com/substack/minimist) (1.2.5) as the argument parser.
+Minimalistic time tracker. It calculates the number of hours worked in a day and outputs an invoice. It acts like a time card stamped by a time clock. You can clock in and out for work and a break. I used [minimist](https://github.com/substack/minimist) (1.2.5) as the argument parser. You can also check the [deno](https://github.com/ishiharaf/tracker-deno) version.
 
 ## Table of contents
 - [Usage](#usage)
@@ -41,7 +41,7 @@ You can add the date and the hours manually, or add a snippet to your text edito
 }
 ```
 
-Change the contents of `contractor.info` to reflect your information, and `company.info` to reflect the company information. Run the app with `node -w` and an invoice will appear inside the `invoices` folder.
+Change the contents of `contractor.info` to reflect your information, and `company.info` to reflect the company information. Run the app with `node app -w` and an invoice will appear inside the `invoices` folder.
 
 You can pass additional arguments to change some details. To change the invoice or make other changes permanent, you have to edit the source code.
 
