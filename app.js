@@ -17,13 +17,6 @@ const filterLine = (line) => {
 	return arr.filter(el => !filter.includes(el))
 }
 
-const isSameDay = (start, end) => {
-	if (end > start) {
-		return true
-	}
-	return false
-}
-
 const getYear = (date) => {
 	return date.getFullYear().toString()
 }
@@ -60,7 +53,7 @@ const getBillableTime = (line) => {
 		const start = new Date(`${date} ${entry[i]}`)
 		const end = new Date(`${date} ${entry[i + 1]}`)
 
-		if (!isSameDay(start, end)) {
+		if (end < start) {
 			end.setDate(end.getDate() + 1)
 		}
 		billable += getMinutesDiff(start, end)
@@ -323,14 +316,14 @@ const parseLog = (file) => {
 }
 
 const showHelp = () => {
-	console.log('"-h" displays this message')
-	console.log('"-w" writes an invoice.')
-	console.log('"-a" includes additional expenses on the invoice')
-	console.log('"-i" takes a file as the input. Default is "MM-DD.log"')
-	console.log('"-o" changes the output format. Default is "txt". It currently supports "txt" and "html"')
-	console.log('"-d" changes the hours on the invoice to decimal')
-	console.log('"-c" changes the billed client. Pass the name without the ".info". Default is "company"')
-	console.log('"-r" changes the hourly rate. Default is "16"')
+	console.info('"-h" displays this message')
+	console.info('"-w" writes an invoice.')
+	console.info('"-a" includes additional expenses on the invoice')
+	console.info('"-i" takes a file as the input. Default is "MM-DD.log"')
+	console.info('"-o" changes the output format. Default is "txt". It currently supports "txt" and "html"')
+	console.info('"-d" changes the hours on the invoice to decimal')
+	console.info('"-c" changes the billed client. Pass the name without the ".info". Default is "company"')
+	console.info('"-r" changes the hourly rate. Default is "16"')
 }
 
 const parser = require("./parser")
