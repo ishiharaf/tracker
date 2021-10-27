@@ -1,6 +1,6 @@
 # tracker
 
-Minimalistic time tracker. It calculates the number of hours worked in a day and outputs an invoice. It acts like a time card stamped by a time clock. You can clock in and out for work and a break. I used [minimist](https://github.com/substack/minimist) (1.2.5) as the argument parser. You can also check the [deno](https://github.com/ishiharaf/tracker-deno) version.
+Minimalistic time tracker. It calculates the number of hours worked in a day and outputs an invoice. It acts like a time card stamped by a time clock. You can clock in and out for work and a break. I used [minimist](https://github.com/substack/minimist) (1.2.5) as the argument parser.
 
 ## Table of contents
 - [Usage](#usage)
