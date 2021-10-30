@@ -123,19 +123,19 @@ const txtExpenses = (amount) => {
 		const line = lines[i]
 		if (line.charAt(0) !== "#") {
 			const str = line.split(" ")
-			const expense = str[str.length - 1]
+			const expense = Number(str[str.length - 1])
 			str.pop(), str.shift()
 			const item = `${str.join(" ")} = $${expense}\n`
 
-			txt += item, subtotal += Number(expense)
+			txt += item, subtotal += expense
 		}
 	}
 
-	const total = (Number(amount) + subtotal).toFixed(2)
+	const total = amount + subtotal
 	return `\n\nADDITIONAL EXPENSES\n` +
 		   `${txt}\n` +
-		   `  SUBTOTAL = $${subtotal}\n` +
-		   `     TOTAL = $${total}`
+		   `  SUBTOTAL = $${subtotal.toFixed(2)}\n` +
+		   `     TOTAL = $${total.toFixed(2)}`
 }
 
 const txtHours = (log) => {
@@ -174,7 +174,7 @@ const writeTxt = (info) => {
 			  `     HOURS = ${hours}\n` +
 			  `    AMOUNT = $${amount}`
 
-	if (argv.a) txt += txtExpenses(amount)
+	if (argv.a) txt += txtExpenses(Number(amount))
 	writeFile(invoice, txt)
 }
 
@@ -197,7 +197,7 @@ const htmlExpenses = (amount) => {
 		if (line.charAt(0) !== "#") {
 			const str = line.split(" ")
 			const date = str[0]
-			const expense = str[str.length - 1]
+			const expense = Number(str[str.length - 1])
 			str.pop(), str.shift()
 			const item = str.join(" ")
 			const div = `
@@ -207,20 +207,20 @@ const htmlExpenses = (amount) => {
 			<div class="amount end">$${expense}</div>
 		</div>`
 
-			html += div, subtotal += Number(expense)
+			html += div, subtotal += expense
 		}
 	}
 
-	const total = (Number(amount) + subtotal).toFixed(2)
+	const total = amount + subtotal
 	html += `
 	</div>
 	<div class="total">
 		<div><b>Subtotal</b></div>
-		<div class="end">$${subtotal}</div>
+		<div class="end">$${subtotal.toFixed(2)}</div>
 	</div>
 	<div class="total">
 		<div><b>Total</b></div>
-		<div class="end">$${total}</div>
+		<div class="end">$${total.toFixed(2)}</div>
 	</div>`
 
 	return html
@@ -292,7 +292,7 @@ const writeHtml = (info) => {
 	</div>`
 
 	let html = template.slice(0, position) + content
-	if (argv.a) html += htmlExpenses(amount)
+	if (argv.a) html += htmlExpenses(Number(amount))
 	html += template.slice(position)
 
 	writeFile(invoice, html)
