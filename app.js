@@ -169,7 +169,7 @@ const writeTxt = (info) => {
 			  `${contractor}\n\n` +
 			  `RECIPIENT\n` +
 			  `${company}\n\n` +
-			  `DATE         HOURS   RATE   AMOUNT\n` +
+			  `DATE         HOURS   RATE    AMOUNT\n` +
 			  `${txtHours(info.log)}\n` +
 			  `     HOURS = ${hours}\n` +
 			  `    AMOUNT = $${amount}`
